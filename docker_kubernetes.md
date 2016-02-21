@@ -290,6 +290,14 @@ docker kill -s HUP nginx
 
 ---
 
+# Deployment First Principles
+
+![Deployment](https://www.packtpub.com/graphics/9781785886805/graphics/4961_08_02.jpg)
+
+Source: A. Espinosa, "Chapter 8: Onto Production", *Docker High Performance*, Packt Publishing 2016.
+
+---
+
 Install Docker Toolbox
 Run containers
 Build your own docker images
