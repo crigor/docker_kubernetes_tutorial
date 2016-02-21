@@ -227,9 +227,66 @@ CMD ["rails", "server", "-b", "0.0.0.0"]
 
 ---
 
-^ Using a load balancer like nginx or haproxy
+# Loadbalancing
 
-^ Start multiple containers on 8080, 8081, etc.
+Preparation of Multiple app "upstreams"
+
+```
+docker run -d --name=app1 crigor/todo
+docker run -d --name=app2 crigor/todo
+```
+
+Note the IP addresses:
+
+```
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' app1
+172.17.0.2
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' app2
+172.17.0.3
+```
+
+Prepare the loadbalancer `nginx.conf`:
+
+```
+events { }
+
+http {
+  upstream app_server {
+    server 172.17.0.2:3000;
+    server 172.17.0.3:3000;
+  }
+  server {
+    location / {
+      proxy_pass http://app_server;
+    }
+  }
+}
+```
+
+Run the nginx container:
+
+```
+docker volume create nginx
+docker create --name=nginx --volumes-from nginx:/etc/nginx --net=host nginx
+docker cp nginx.conf nginx:/etc/nginx/nginx.conf
+docker start nginx
+```
+
+Scale-out! Add an instance
+
+```
+docker run -d --name=app3 crigor/todo
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' app3
+172.17.0.3
+```
+
+Update the upstreams in config. Reload nginx
+
+```
+vi nginx.conf
+docker cp nginx.conf nginx:/etc/nginx/nginx.conf
+docker kill -s HUP nginx
+```
 
 ---
 
