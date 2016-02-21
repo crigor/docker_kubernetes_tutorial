@@ -6,6 +6,7 @@ build-lists: true
 # What is a container?
 
 - Lightweight VM
+- A package (Tarball with metadata)
 - Process
 
 ---
